@@ -10,4 +10,7 @@ public interface ProductService {
     //前端所傳過來的productRequest
     Integer createProduct(ProductRequest productRequest);
 
+    void updateProduct(Integer productId, ProductRequest productRequest);
+
+    void deleteProductById(Integer productId);
 }

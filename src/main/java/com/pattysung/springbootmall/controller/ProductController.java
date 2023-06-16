@@ -36,4 +36,26 @@ public class ProductController {
         //回傳ResponseEntity給前端(狀態碼201Created)，且把創建出來的商品數據，放在body裏面傳回給前端
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
+    @PutMapping("/products/{productId}") //@PathVariable 接住從Url路徑傳過來的productId的值，還有@RequestBody接住前端傳過來的json參數（商品修改後的數據productRequest）
+    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId,
+                                                 @RequestBody @Valid ProductRequest productRequest){
+        //檢查Product是否存在
+        Product product = productService.getProductById(productId);
+
+        if (product == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        //修改商品的數據
+        productService.updateProduct(productId, productRequest);
+
+        Product updatedProduct = productService.getProductById(productId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+    }
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId){
+        productService.deleteProductById(productId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
