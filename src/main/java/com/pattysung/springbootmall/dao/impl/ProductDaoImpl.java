@@ -1,5 +1,6 @@
 package com.pattysung.springbootmall.dao.impl;
 
+import com.pattysung.springbootmall.constant.ProductCategory;
 import com.pattysung.springbootmall.dao.ProductDao;
 import com.pattysung.springbootmall.dto.ProductRequest;
 import com.pattysung.springbootmall.model.Product;
@@ -21,6 +22,29 @@ public class ProductDaoImpl implements ProductDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public List<Product> getProducts(ProductCategory category, String search) {
+        String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, " +
+                "created_date, last_modified_date " +
+                "FROM product WHERE 1=1";
+
+        Map<String, Object> map = new HashMap<>();
+
+        if (category != null){
+            sql = sql + " AND category = :category";
+            map.put("category", category.name()); //原先categor為enum類型，所以要用name()轉換為字串
+        }
+
+        if (search != null){
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + search + "%");
+        }
+
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+
+        return productList;
+    }
 
     @Override
     public Product getProductById(Integer productId) {

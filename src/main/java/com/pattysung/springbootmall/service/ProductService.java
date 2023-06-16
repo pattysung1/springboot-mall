@@ -1,9 +1,14 @@
 package com.pattysung.springbootmall.service;
 
+import com.pattysung.springbootmall.constant.ProductCategory;
 import com.pattysung.springbootmall.dto.ProductRequest;
 import com.pattysung.springbootmall.model.Product;
 
+import java.util.List;
+
 public interface ProductService {
+
+    List<Product> getProducts(ProductCategory category, String search);
 
     Product getProductById (Integer productId);
 

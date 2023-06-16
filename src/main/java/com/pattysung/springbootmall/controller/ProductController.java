@@ -1,5 +1,6 @@
 package com.pattysung.springbootmall.controller;
 
+import com.pattysung.springbootmall.constant.ProductCategory;
 import com.pattysung.springbootmall.dto.ProductRequest;
 import com.pattysung.springbootmall.model.Product;
 import com.pattysung.springbootmall.service.ProductService;
@@ -9,12 +10,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    //查詢列表
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search
+    ){
+        List<Product> productList = productService.getProducts(category, search);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productList);
+    }
 
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
@@ -26,6 +39,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest){
         //此方法去資料庫創建資料，並返回資料庫生成的productId給我們
