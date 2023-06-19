@@ -1,6 +1,5 @@
 package com.pattysung.springbootmall.dao.impl;
 
-import com.pattysung.springbootmall.constant.ProductCategory;
 import com.pattysung.springbootmall.dao.ProductDao;
 import com.pattysung.springbootmall.dto.ProductQueryParams;
 import com.pattysung.springbootmall.dto.ProductRequest;
@@ -31,15 +30,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
 
         //查詢條件
-        if (productQueryParams.getCategory() != null){
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name()); //原先category為enum類型，所以要用name()轉換為字串
-        }
-
-        if (productQueryParams.getSearch() != null){
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFiltering(sql, map , productQueryParams);
         //queryForObject()用於取count的值->要把count值，去轉換成一個Integer類型的返回值
         Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
 
@@ -55,15 +46,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
 
         //查詢條件
-        if (productQueryParams.getCategory() != null){
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name()); //原先categor為enum類型，所以要用name()轉換為字串
-        }
-
-        if (productQueryParams.getSearch() != null){
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFiltering(sql, map , productQueryParams);
         //排序：只能用字串拼接方式
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
@@ -154,5 +137,19 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", productId);
 
         namedParameterJdbcTemplate.update(sql, map);
+    }
+    //查詢條件（private是只有這個class才能用，讓所有都可以用->public）
+    private String addFiltering(String sql, Map<String, Object> map, ProductQueryParams productQueryParams){
+        if (productQueryParams.getCategory() != null){
+            sql = sql + " AND category = :category";
+            map.put("category", productQueryParams.getCategory().name()); //原先categor為enum類型，所以要用name()轉換為字串
+        }
+
+        if (productQueryParams.getSearch() != null){
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        return sql;
     }
 }
