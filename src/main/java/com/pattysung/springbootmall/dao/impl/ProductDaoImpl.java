@@ -142,7 +142,7 @@ public class ProductDaoImpl implements ProductDao {
     private String addFiltering(String sql, Map<String, Object> map, ProductQueryParams productQueryParams){
         if (productQueryParams.getCategory() != null){
             sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name()); //原先categor為enum類型，所以要用name()轉換為字串
+            map.put("category", productQueryParams.getCategory().name()); //原先category為enum類型，所以要用name()轉換為字串
         }
 
         if (productQueryParams.getSearch() != null){
