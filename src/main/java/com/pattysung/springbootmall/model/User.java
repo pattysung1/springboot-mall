@@ -1,11 +1,18 @@
 package com.pattysung.springbootmall.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 
 public class User {
 
     private Integer userId;
+
+//    @JsonProperty("e_mail") //可自訂傳送給前端的格式
     private String email;
+
+    @JsonIgnore //忽略這個值：當轉換此User Object為json格式時，就會去忽略這個變數，不會將這個值回傳給前端
     private String password;
     private Date createdDate;
     private Date lastModifiedDate;
