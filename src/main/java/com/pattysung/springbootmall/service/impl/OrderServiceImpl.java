@@ -1,0 +1,55 @@
+package com.pattysung.springbootmall.service.impl;
+
+import com.pattysung.springbootmall.dao.OrderDao;
+import com.pattysung.springbootmall.dao.ProductDao;
+import com.pattysung.springbootmall.dto.BuyItem;
+import com.pattysung.springbootmall.dto.CreateOrderRequest;
+import com.pattysung.springbootmall.model.OrderItem;
+import com.pattysung.springbootmall.model.Product;
+import com.pattysung.springbootmall.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
+public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private OrderDao orderDao;
+
+    @Autowired
+    private ProductDao productDao;
+
+    @Transactional //只要有修改多張資料庫的table的話，要記得加上@Transactional註解，確保操作同時發生或不發生
+    @Override
+    public Integer createOrder(Integer userId, CreateOrderRequest createOrderRequest) {
+        int totalAmount = 0;
+        List<OrderItem> orderItemList = new ArrayList<>();
+
+        for(BuyItem buyItem : createOrderRequest.getBuyItemList()){
+            Product product = productDao.getProductById(buyItem.getProductId());
+
+            //計算總價錢
+            int amount = buyItem.getQuantity() * product.getPrice();
+            totalAmount = totalAmount + amount;
+
+            //轉換 BuyItem to OrderItem
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductId(buyItem.getProductId());
+            orderItem.setQuantity(buyItem.getQuantity());
+            orderItem.setAmount(amount);
+
+            orderItemList.add(orderItem);
+        }
+
+        //創建訂單
+        Integer orderId = orderDao.createOrder(userId, totalAmount);
+
+        orderDao.createOrderItems(orderId, orderItemList);
+
+        return orderId;
+    }
+}
