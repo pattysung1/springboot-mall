@@ -4,6 +4,7 @@ import com.pattysung.springbootmall.dao.OrderDao;
 import com.pattysung.springbootmall.dao.ProductDao;
 import com.pattysung.springbootmall.dto.BuyItem;
 import com.pattysung.springbootmall.dto.CreateOrderRequest;
+import com.pattysung.springbootmall.model.Order;
 import com.pattysung.springbootmall.model.OrderItem;
 import com.pattysung.springbootmall.model.Product;
 import com.pattysung.springbootmall.service.OrderService;
@@ -22,6 +23,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Override
+    public Order getOrderById(Integer orderId) {
+        Order order = orderDao.getOrderById(orderId);
+
+        List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
+
+        order.setOrderItemList(orderItemList);
+
+        return order;
+    }
 
     @Transactional //只要有修改多張資料庫的table的話，要記得加上@Transactional註解，確保操作同時發生或不發生
     @Override
